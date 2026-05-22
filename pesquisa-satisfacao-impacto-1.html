@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisa de Satisfação - Impacto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f2f5;
+    font-family: 'Barlow', sans-serif;
+    color: #1a1a2e;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Header */
+  .header {
+    background: #1a1a2e;
+    padding: 2rem 2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .logo-box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    flex-shrink: 0;
+  }
+
+  .logo-box svg { display: block; }
+
+  .header-text h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .header-text p {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* Info section */
+  .info-section {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-group label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .field-group input,
+  .field-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    background: #fafafa;
+    transition: border-color 0.2s;
+    outline: none;
+    appearance: none;
+  }
+
+  .field-group input:focus,
+  .field-group select:focus { border-color: #c0392b; background: #fff; }
+
+  .field-group input[readonly] {
+    background: #f4f4f4;
+    color: #666;
+    cursor: default;
+  }
+
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: #888;
+    pointer-events: none;
+  }
+
+  /* Intro text */
+  .intro {
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.7;
+    font-style: italic;
+    background: #fafafa;
+  }
+
+  /* Rating table */
+  .rating-section { padding: 1.5rem 2rem; }
+
+  .rating-section h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  /* Scale header */
+  .scale-header {
+    display: grid;
+    grid-template-columns: 1fr 160px 120px 120px 80px;
+    gap: 4px;
+    padding: 8px 0;
+    border-bottom: 2px solid #1a1a2e;
+    margin-bottom: 4px;
+  }
+
+  .scale-header span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #1a1a2e;
+    text-align: center;
+  }
+
+  .scale-header span:first-child { text-align: left; }
+
+  /* Sub-header with numbers */
+  .scale-subheader {
+    display: grid;
+    grid-template-columns: 1fr 160px 120px 120px 80px;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .score-numbers {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .score-numbers span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #888;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Item rows */
+  .rating-item {
+    display: grid;
+    grid-template-columns: 1fr 160px 120px 120px 80px;
+    gap: 4px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
+  }
+
+  .rating-item:hover { background: #fafafa; border-radius: 8px; }
+
+  .item-label {
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.4;
+    padding-right: 8px;
+  }
+
+  .item-num {
+    font-weight: 700;
+    color: #c0392b;
+    margin-right: 6px;
+    font-size: 0.85rem;
+  }
+
+  /* Radio groups per category */
+  .radio-group {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .radio-group input[type="radio"] { display: none; }
+
+  .radio-group label {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #999;
+    transition: all 0.15s;
+  }
+
+  .radio-group input[type="radio"]:checked + label {
+    border-color: #c0392b;
+    color: #fff;
+    background: #c0392b;
+  }
+
+  .radio-group label:hover { border-color: #c0392b; color: #c0392b; }
+
+  /* Colors per rating zone */
+  .zone-excelente input[type="radio"]:checked + label { background: #27ae60; border-color: #27ae60; }
+  .zone-bom input[type="radio"]:checked + label { background: #2980b9; border-color: #2980b9; }
+  .zone-regular input[type="radio"]:checked + label { background: #f39c12; border-color: #f39c12; }
+  .zone-ruim input[type="radio"]:checked + label { background: #c0392b; border-color: #c0392b; }
+
+  /* Textarea section */
+  .comments-section {
+    padding: 0 2rem 1.5rem;
+  }
+
+  .comments-section h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+
+  .comments-section p {
+    font-size: 0.78rem;
+    color: #aaa;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    color: #333;
+    background: #fafafa;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: #c0392b; background: #fff; }
+
+  /* Submit */
+  .submit-section {
+    padding: 1.5rem 2rem 2rem;
+    text-align: center;
+  }
+
+  .btn-submit {
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 48px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-submit:hover { background: #a93226; }
+  .btn-submit:active { transform: scale(0.98); }
+
+  /* Success message */
+  .success-msg {
+    display: none;
+    background: #eafaf1;
+    border: 1.5px solid #27ae60;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    margin: 0 2rem 2rem;
+  }
+
+  .success-msg h3 { color: #1e8449; font-size: 1.1rem; margin-bottom: 6px; }
+  .success-msg p { color: #555; font-size: 0.9rem; }
+
+  /* Error highlight */
+  .field-error { border-color: #c0392b !important; background: #fff5f5 !important; }
+  .error-msg { font-size: 0.78rem; color: #c0392b; margin-top: 4px; display: none; }
+
+  /* Divider */
+  .divider { height: 1px; background: #eee; margin: 0 2rem; }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    body { padding: 1rem 0.5rem; }
+    .header { padding: 1.2rem; flex-direction: column; text-align: center; }
+    .info-grid { grid-template-columns: 1fr; }
+    .info-section, .rating-section, .comments-section, .submit-section { padding-left: 1rem; padding-right: 1rem; }
+
+    .scale-header { grid-template-columns: 1fr; display: none; }
+    .scale-subheader { display: none; }
+
+    .rating-item {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 12px 0;
+    }
+
+    .radio-group { justify-content: flex-start; gap: 6px; }
+    .zone-label {
+      font-size: 0.72rem;
+      color: #888;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .mobile-zones { display: flex; flex-direction: column; gap: 6px; }
+    .mobile-zone-row { display: flex; align-items: center; gap: 8px; }
+    .mobile-zone-name {
+      font-size: 0.72rem;
+      width: 60px;
+      color: #888;
+      font-weight: 600;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <form id="pesquisaForm" action="https://formspree.io/f/mpqnrjzg" method="POST">
+    <input type="hidden" name="_to" value="fabio.aragos@grupoimpacto.com.br">
+    <input type="hidden" name="_cc" value="alexandre.brisola@grupoimpacto.com.br">
+    <input type="hidden" name="_replyto" value="fabio.aragos@grupoimpacto.com.br">
+    <input type="hidden" id="emailSubject" name="_subject" value="Pesquisa de Satisfação - Posto">
+
+    <!-- Header -->
+    <div class="card">
+      <div class="header">
+        <div class="logo-box">
+          <img src="data:image/webp;base64,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" alt="Logo Impacto" style="height:64px;display:block;">
+        </div>
+        <div class="header-text">
+          <h1>Pesquisa de Satisfação</h1>
+          <p>Estamos constantemente buscando melhorar a qualidade<br>dos nossos serviços. Sua opinião é muito importante!</p>
+        </div>
+      </div>
+
+      <!-- Info fields -->
+      <div class="info-section">
+        <div class="info-grid">
+          <div class="field-group">
+            <label for="posto">Posto</label>
+            <input type="text" id="posto" name="posto" placeholder="Nome do posto" required>
+            <span class="error-msg" id="erro-posto">Preencha o posto</span>
+          </div>
+          <div class="field-group">
+            <label for="dataHora">Data e Hora</label>
+            <input type="text" id="dataHora" name="dataHora" readonly>
+          </div>
+          <div class="field-group">
+            <label for="avaliador">Avaliador</label>
+            <input type="text" id="avaliador" name="avaliador" placeholder="Nome do avaliador" required>
+            <span class="error-msg" id="erro-avaliador">Preencha o avaliador</span>
+          </div>
+          <div class="field-group">
+            <label for="servico">Serviço Avaliado</label>
+            <div class="select-wrap">
+              <select id="servico" name="servico" required>
+                <option value="" disabled selected>Selecione o serviço</option>
+                <option value="Segurança">Segurança</option>
+                <option value="Portaria">Portaria</option>
+                <option value="Recepção">Recepção</option>
+                
+              </select>
+            </div>
+            <span class="error-msg" id="erro-servico">Selecione um serviço</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Intro text -->
+      <div class="intro">
+        Estamos constantemente procurando maneiras de melhorar a qualidade dos serviços prestados. Para isso precisamos saber sua opinião. Ajude-nos a fazer o trabalho que sua empresa merece, o melhor possível!! Contamos com a sua colaboração em responder a pesquisa.
+      </div>
+
+      <!-- Rating table -->
+      <div class="rating-section">
+        <h2>Avaliação dos Itens</h2>
+
+        <!-- Desktop header -->
+        <div class="scale-header">
+          <span>Item</span>
+          <span style="background:#e8f8ee;border-radius:6px;padding:4px;color:#1e8449">Excelente</span>
+          <span style="background:#e8f0fb;border-radius:6px;padding:4px;color:#1a5276">Bom</span>
+          <span style="background:#fef9e7;border-radius:6px;padding:4px;color:#b7770d">Regular</span>
+          <span style="background:#fdedec;border-radius:6px;padding:4px;color:#922b21">Ruim</span>
+        </div>
+        <div class="scale-subheader">
+          <span></span>
+          <div class="score-numbers">
+            <span>10</span><span>9</span><span>8</span>
+          </div>
+          <div class="score-numbers">
+            <span>7</span><span>6</span>
+          </div>
+          <div class="score-numbers">
+            <span>5</span><span>4</span>
+          </div>
+          <div class="score-numbers">
+            <span>3</span><span>2</span><span>1</span>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div id="rating-items">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Comments -->
+      <div class="comments-section" style="margin-top:1.5rem">
+        <h3>Opiniões / Sugestões</h3>
+        <p>Espaço reservado para comentários do cliente</p>
+        <textarea name="opinioesCliente" rows="4" placeholder="Escreva aqui suas opiniões ou sugestões..."></textarea>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-section">
+        <button type="submit" class="btn-submit">Enviar Pesquisa</button>
+      </div>
+
+      <div class="success-msg" id="successMsg">
+        <h3>✓ Pesquisa enviada com sucesso!</h3>
+        <p>Agradecemos sua avaliação. Suas respostas foram enviadas e serão analisadas pela nossa equipe.</p>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+const itens = [
+  { num: 1, label: "Perfil profissional dos colaboradores alocados para atendimento dos serviços contratados" },
+  { num: 2, label: "Apresentação pessoal dos funcionários" },
+  { num: 3, label: "Postura/Comportamento são adequados" },
+  { num: 4, label: "Atendimento/Presteza dos funcionários" },
+  { num: 5, label: "Cumprimento das normas e procedimentos internos" },
+  { num: 6, label: "Prazo de atendimento de ocorrências" },
+  { num: 7, label: "Cobertura de faltas" },
+  { num: 8, label: "Frequência de visitas do coordenador supervisor" },
+  { num: 9, label: "Sensação em relação a segurança em geral" },
+  { num: 10, label: "Qual seu grau de satisfação com relação aos serviços prestados?" }
+];
+
+const zonas = [
+  { nome: "Excelente", cls: "zone-excelente", valores: [10, 9, 8] },
+  { nome: "Bom",       cls: "zone-bom",       valores: [7, 6] },
+  { nome: "Regular",   cls: "zone-regular",   valores: [5, 4] },
+  { nome: "Ruim",      cls: "zone-ruim",      valores: [3, 2, 1] }
+];
+
+const container = document.getElementById('rating-items');
+
+itens.forEach(item => {
+  const row = document.createElement('div');
+  row.className = 'rating-item';
+
+  const labelDiv = document.createElement('div');
+  labelDiv.className = 'item-label';
+  labelDiv.innerHTML = `<span class="item-num">${item.num}.</span>${item.label}`;
+  row.appendChild(labelDiv);
+
+  zonas.forEach(zona => {
+    const group = document.createElement('div');
+    group.className = `radio-group ${zona.cls}`;
+
+    zona.valores.forEach(val => {
+      const rid = `item${item.num}_v${val}`;
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `item_${item.num}`;
+      radio.id = rid;
+      radio.value = val;
+
+      const lbl = document.createElement('label');
+      lbl.htmlFor = rid;
+      lbl.textContent = val;
+      lbl.title = `${val} - ${zona.nome}`;
+
+      group.appendChild(radio);
+      group.appendChild(lbl);
+    });
+
+    row.appendChild(group);
+  });
+
+  container.appendChild(row);
+});
+
+// Update email subject when posto changes
+document.getElementById('posto').addEventListener('input', function() {
+  const posto = this.value.trim() || 'Posto';
+  document.getElementById('emailSubject').value = 'Pesquisa de Satisfação - ' + posto;
+});
+
+// Set auto date/time
+function setDateTime() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2,'0');
+  const month = String(now.getMonth()+1).padStart(2,'0');
+  const year = now.getFullYear();
+  const hours = String(now.getHours()).padStart(2,'0');
+  const minutes = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('dataHora').value = `${day}/${month}/${year} às ${hours}:${minutes}`;
+}
+setDateTime();
+
+// Form submission
+const form = document.getElementById('pesquisaForm');
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  let valid = true;
+
+  ['posto','avaliador'].forEach(id => {
+    const el = document.getElementById(id);
+    const err = document.getElementById('erro-' + id);
+    if (!el.value.trim()) {
+      el.classList.add('field-error');
+      err.style.display = 'block';
+      valid = false;
+    } else {
+      el.classList.remove('field-error');
+      err.style.display = 'none';
+    }
+  });
+
+  const servico = document.getElementById('servico');
+  const erroServico = document.getElementById('erro-servico');
+  if (!servico.value) {
+    servico.classList.add('field-error');
+    erroServico.style.display = 'block';
+    valid = false;
+  } else {
+    servico.classList.remove('field-error');
+    erroServico.style.display = 'none';
+  }
+
+  if (!valid) return;
+
+  const btn = form.querySelector('.btn-submit');
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+
+  try {
+    const data = new FormData(form);
+    const resp = await fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (resp.ok) {
+      form.querySelector('.submit-section').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+      document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth' });
+    } else {
+      btn.textContent = 'Tentar novamente';
+      btn.disabled = false;
+      alert('Houve um erro ao enviar. Tente novamente.');
+    }
+  } catch(err) {
+    btn.textContent = 'Tentar novamente';
+    btn.disabled = false;
+    alert('Erro de conexão. Verifique sua internet e tente novamente.');
+  }
+});
+</script>
+</body>
+</html>
